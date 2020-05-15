@@ -1,5 +1,4 @@
 <?php
-
 $route['v1/api/create/vehicle']='api/v1/api/create_vehicle';
 $route['v1/api/create/consignment']='api/v1/api/create_consignment';
 $route['v1/api/create/trip']='api/v1/api/create_trip';

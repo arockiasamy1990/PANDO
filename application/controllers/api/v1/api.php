@@ -23,16 +23,18 @@ class Api extends DAPI_Controller {
 		$returnArr['status'] = '0';
 		$returnArr['response'] = '';
 		try {
-			$vehicle_number = $this->input->post('vehicle_number');  
-			$maximum_capacity = $this->input->post('maximum_capacity'); 
-			$maker = $this->input->post('maker'); 
-			$model = $this->input->post('model'); 
-			$year_of_vehicle = $this->input->post('year_of_model'); 
-			$owner_name = $this->input->post('owner_name'); 
-			$owner_contact = $this->input->post('owner_contact'); 
-			$lat = $this->input->post('lat'); 
-			$lon = $this->input->post('lon'); 
-			
+			$data = json_decode(file_get_contents('php://input'), true);
+			if(!empty($data)) {
+				 $vehicle_number = $data['vehicle_number'];  
+				 $maximum_capacity = $data['maximum_capacity']; 
+				 $maker = $data['maker']; 
+				 $model = $data['model']; 
+				 $year_of_vehicle = $data['year_of_model']; 
+				 $owner_name = $data['owner_name']; 
+				 $owner_contact = $data['owner_contact']; 
+				 $lat = $data['lat']; 
+				 $lon = $data['lon']; 
+				
 			if ($vehicle_number != "" && $maximum_capacity!='' && $maker!='' && $model!='' && $year_of_vehicle!='' && $owner_name!='' && $owner_contact!='' && $lat!='' && $lon!='') {
 				$checkVehicle = $this->api_model->get_selected_fields(VEHICLE,array('vehicle_number' =>(string)$vehicle_number),array("_id","status"));
 				if($checkVehicle->num_rows()==0){
@@ -60,6 +62,9 @@ class Api extends DAPI_Controller {
 			} else {
 				$returnArr['response'] = 'some parameters are missing';
 			}
+		  } else {
+			 $returnArr['response'] = 'something went wrong Please try again';
+		 }
 		} catch (MongoException $ex) {
 			$returnArr['response'] = 'something went wrong Please try again';
 		}
@@ -70,13 +75,15 @@ class Api extends DAPI_Controller {
 		$returnArr['status'] = '0';
 		$returnArr['response'] = '';
 		try {
-			$material_code = $this->input->post('material_code');  
-			$weight = $this->input->post('weight'); 
-			$shipper_name = $this->input->post('shipper_name'); 
-			$shipper_contact = $this->input->post('shipper_contact'); 
-			$lat = $this->input->post('lat'); 
-			$lon = $this->input->post('lon'); 
-			if ($material_code != "" && $weight!='' && $shipper_name!='' && $shipper_contact!=''  && $lat!='' && $lon!='') {
+			$data = json_decode(file_get_contents('php://input'), true);
+			if(!empty($data)) {
+				$material_code = $data['material_code'];  
+				$weight = $data['weight']; 
+				$shipper_name = $data['shipper_name']; 
+				$shipper_contact = $data['shipper_contact']; 
+				$lat = $data['lat']; 
+				$lon = $data['lon']; 
+			 if ($material_code != "" && $weight!='' && $shipper_name!='' && $shipper_contact!=''  && $lat!='' && $lon!='') {
 					$consigment_number=$this->api_model->get_consigment_id();
 					$checkShipper = $this->api_model->get_selected_fields(SHIPPER,array('shipper_contact' =>(string)$shipper_contact),array("_id"));
 					if($checkShipper->num_rows()==0) {
@@ -111,6 +118,9 @@ class Api extends DAPI_Controller {
 			} else {
 				$returnArr['response'] = 'some parameters are missing';
 			}
+		 } else {
+			 $returnArr['response'] = 'something went wrong Please try again';
+		 }
 		} catch (MongoException $ex) {
 			$returnArr['response'] = 'something went wrong Please try again';
 		}
@@ -121,13 +131,15 @@ class Api extends DAPI_Controller {
 		$returnArr['status'] = '0';
 		$returnArr['response'] = '';
 		try {
-			$vehicle_id = $this->input->post('vehicle_id');  
-			$consignment_id = $this->input->post('consignment_id'); 
-			$start_date = $this->input->post('start_date'); 
-			$destination_lat = $this->input->post('destination_lat'); 
-			$destination_lon = $this->input->post('destination_lon'); 
-			$current_lat = $this->input->post('current_lat'); 
-			$current_lon = $this->input->post('current_lon'); 
+			$data = json_decode(file_get_contents('php://input'), true);
+			if(!empty($data)) {
+			$vehicle_id = $data['vehicle_id'];  
+			$consignment_id = $data['consignment_id']; 
+			$start_date = $data['start_date']; 
+			$destination_lat = $data['destination_lat']; 
+			$destination_lon = $data['destination_lon']; 
+			$current_lat = $data['current_lat']; 
+			$current_lon = $data['current_lon']; 
 			if ($vehicle_id != "" && $consignment_id!='' && $start_date!='' && $destination_lat!=''  && $destination_lon!='' && $current_lat!='' && $current_lon!='') {
 					$trip_id=$this->api_model->get_trip_id();
 					$get_vehicle_info = $this->api_model->get_all_details(VEHICLE,array('_id' =>MongoID($vehicle_id)));
@@ -178,6 +190,9 @@ class Api extends DAPI_Controller {
 			} else {
 				$returnArr['response'] = 'some parameters are missing';
 			}
+		 } else {
+			 $returnArr['response'] = 'something went wrong Please try again';
+		 }
 		} catch (MongoException $ex) {
 			$returnArr['response'] = 'something went wrong Please try again';
 		}
@@ -188,32 +203,36 @@ class Api extends DAPI_Controller {
         $returnArr['status'] = '0';
         $returnArr['response'] = '';
 		try {
-			$trip_id = $this->input->post('trip_id');
-			$vehicle_id = $this->input->post('vehicle_id');
-			$lat = $this->input->post('lat');
-			$lon = $this->input->post('lon');
-			if($trip_id != '' && $lat != '' && $lon != '' && $vehicle_id!=''){
-				$getTrip = $this->api_model->get_selected_fields(TRIP, array('trip_id' =>floatval($trip_id)), array('_id'));
-				if($getTrip->num_rows()==1){
-					$dataArr =  array('loc' =>array('lon'=>floatval($lon),
-											 'lat'=>floatval($lat)
-											),
-									   'updated_time'=>MongoDATE(time()),
-									   'trip_id'=>floatval($trip_id),
-									   'vehicle_id'=>MongoID($vehicle_id)
-									 );
-					$this->api_model->simple_insert(TRIP_TRACKING,$dataArr);
-					$returnArr['status'] = '1';
-					$returnArr['response'] = 'Location Updated successfully';
-				}else{
-					$returnArr['response'] = 'No Trip Found';
+			$data = json_decode(file_get_contents('php://input'), true);
+			if(!empty($data)) {
+				$trip_id = $data['trip_id'];
+				$vehicle_id = $data['vehicle_id'];
+				$lat = $data['lat'];
+				$lon = $data['lon'];
+				if($trip_id != '' && $lat != '' && $lon != '' && $vehicle_id!=''){
+					$getTrip = $this->api_model->get_selected_fields(TRIP, array('trip_id' =>floatval($trip_id)), array('_id'));
+					if($getTrip->num_rows()==1){
+						$dataArr =  array('loc' =>array('lon'=>floatval($lon),
+												 'lat'=>floatval($lat)
+												),
+										   'updated_time'=>MongoDATE(time()),
+										   'trip_id'=>floatval($trip_id),
+										   'vehicle_id'=>MongoID($vehicle_id)
+										 );
+						$this->api_model->simple_insert(TRIP_TRACKING,$dataArr);
+						$returnArr['status'] = '1';
+						$returnArr['response'] = 'Location Updated successfully';
+					}else{
+						$returnArr['response'] = 'No Trip Found';
+					}
+				} else {
+					$returnArr['response'] = 'Some Parameters are missing';
 				}
-            } else {
-                $returnArr['response'] = 'Some Parameters are missing';
-            }
-		
+		 } else {
+			 $returnArr['response'] = 'something Went wrong';
+		 }
 		} catch (MongoException $ex) {
-            $returnArr['response'] = $this->format_string('Error in connection','error_in_connection');
+            $returnArr['response'] = 'something Went wrong';
         }
         $json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
         echo $this->cleanString($json_encode);

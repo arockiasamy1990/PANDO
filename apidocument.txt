@@ -1,19 +1,27 @@
 Base Path:
 http://localhost/pando/
-
 API End Points
 1)Create Vehicle
-v1/api/create/vehicle
-POST Data:
-vehicle_number:TN0850
-maximum_capacity:1000
-maker:TATA
-model:TATA ACE XL
-year_of_model:2010
-owner_name:arockiasamy
-owner_contact:99408955454
-lat:13.0827
-lon:80.2707
+
+Headers
+---------------
+POST /pando/v1/api/create/vehicle HTTP/1.1
+Host: localhost
+Content-Type: application/json
+Json Data:
+-------------
+{
+	"vehicle_number":"TN0850",
+	"maximum_capacity":"1000",
+	"maker":"TATA",
+	"model":"TATA ACE XL",
+	"year_of_model":"2010",
+	"owner_name":"arockiasamy",
+	"owner_contact":"99408955454",
+	"lat":"13.0827",
+	"lon":"80.2707"
+    
+}
 Response:
 {
     "status": "1",
@@ -27,14 +35,21 @@ Response:
     "response": "Already this vehicle number exists"
 }
 2)Create Consignment
-v1/api/create/consignment
-Post Data:
-material_code:12421512
-weight:500
-shipper_name:arockiasamy
-shipper_contact:99408955454
-lat:13.0827
-lon:80.2707
+Headers
+---------------
+POST /pando/v1/api/create/consignment HTTP/1.1
+Host: localhost
+Content-Type: application/json
+Json Data:
+---------------
+{
+"material_code":"12421512",
+"weight":"500",
+"shipper_name":"arockiasamy",
+"shipper_contact":"99408955454",
+"lat":"13.0827",
+"lon":"80.2707"
+}
 Response:
 {
     "status": "1",
@@ -45,16 +60,24 @@ Response:
     }
 }
 3)Create Trip
-v1/api/create/trip
-Post Data:
-vehicle_id:5ebe1f8375d55d3f6400570e
-consignment_id:5ebe27d475d55d3f6400570f
-start_date:2020-05-15
-destination_lat:13.0500
-destination_lon:80.2121
-current_lat:13.0382
-current_lon:80.1565
+Headers
+---------------
+POST /pando/v1/api/create/trip HTTP/1.1
+Host: localhost
+Content-Type: application/json
+Json Data
+-----------------
+{
+	"vehicle_id":"5ebe1f8375d55d3f6400570e",
+	"consignment_id":"5ebe27d475d55d3f6400570f",
+	"start_date":"2020-05-15",
+	"destination_lat":"13.0500",
+	"destination_lon":"80.2121",
+	"current_lat":"13.0382",
+	"current_lon":"80.1565"
+}
 Response:
+----------
 {
     "status": "1",
     "response": {
@@ -63,12 +86,21 @@ Response:
     }
 }
 4)Update Tracking
-v1/api/update/location/trip
-vehicle_id:5ebe1f8375d55d3f6400570e
-lat:13.0382
-lon:80.1565
-trip_id:944885
+Headers
+---------------
+POST /pando/v1/api/update/location/trip HTTP/1.1
+Host: localhost
+Content-Type: application/json
+Json Data
+------------------
+{
+"vehicle_id":"5ebe1f8375d55d3f6400570e",
+"lat":"13.0382",
+"lon":"80.1565",
+"trip_id":"944885"
+}
 Response:
+-------------------
 {
     "status": "1",
     "response": "Location Updated successfully"
