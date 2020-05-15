@@ -24,14 +24,14 @@ Json Data:
 }
 Response:
 {
-    "status": "1",
+    "status_code": 200,
     "response": {
-        "vehicle_id": "5ebe1f8375d55d3f6400570e",
+        "vehicle_id": "5ebe8ca275d55d3f64005781",
         "message": "Vehicle Created Successfully"
     }
 }
 {
-    "status": "0",
+    "status_code": "400",
     "response": "Already this vehicle number exists"
 }
 2)Create Consignment
@@ -52,12 +52,16 @@ Json Data:
 }
 Response:
 {
-    "status": "1",
+    "status_code": 200,
     "response": {
-        "consigment_ref": "940063",
-        "consignment_id": "5ebe27d475d55d3f6400570f",
+        "consigment_ref": "195922",
+        "consignment_id": "5ebe8d7575d55d3f64005782",
         "message": "Consignment Created Successfully"
     }
+}
+{
+    "status_code": "400",
+    "response": "some parameters are missing"
 }
 3)Create Trip
 Headers
@@ -79,11 +83,15 @@ Json Data
 Response:
 ----------
 {
-    "status": "1",
+    "status_code": 200,
     "response": {
-        "trip_id": "031158",
+        "trip_id": "810119",
         "message": "Trip Booked Successfully"
     }
+}
+{
+    "status_code": "400",
+    "response": "some parameters are missing"
 }
 4)Update Tracking
 Headers
@@ -102,7 +110,15 @@ Json Data
 Response:
 -------------------
 {
-    "status": "1",
+    "status_code": 200,
     "response": "Location Updated successfully"
+}
+{
+    "status_code": "404",
+    "response": "No Trip Found"
+}
+{
+    "status_code": "400",
+    "response": "Some Parameters are missing"
 }
 

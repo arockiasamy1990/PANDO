@@ -20,7 +20,7 @@ class Api extends DAPI_Controller {
 		echo 'API - Version 1.0';
 	}
 	public function create_vehicle() {
-		$returnArr['status'] = '0';
+		$returnArr['status_code'] = '';
 		$returnArr['response'] = '';
 		try {
 			$data = json_decode(file_get_contents('php://input'), true);
@@ -51,28 +51,37 @@ class Api extends DAPI_Controller {
 									),
 						'created_at'=>MongoDATE(time()),
 					  );
+					
 					$this->api_model->simple_insert(VEHICLE,$vehicle_data);
 					$vehicle_id = $this->mongo_db->insert_id();
-					$returnArr['status'] = '1';
+					$returnArr['status_code'] = http_response_code(200);
 					$returnArr['response'] = array('vehicle_id'=>$vehicle_id,
 												'message'=>'Vehicle Created Successfully');
 				} else {
+					http_response_code(400);
+					$returnArr['status_code'] = "400";
 					$returnArr['response'] = 'Already this vehicle number exists';
 				}
 			} else {
+				http_response_code(400);
+				$returnArr['status_code'] = "400"; 
 				$returnArr['response'] = 'some parameters are missing';
 			}
 		  } else {
+			 http_response_code(400);
+			 $returnArr['status_code'] = "400";
 			 $returnArr['response'] = 'something went wrong Please try again';
 		 }
 		} catch (MongoException $ex) {
+			http_response_code(500);
+			$returnArr['status_code'] = "500";
 			$returnArr['response'] = 'something went wrong Please try again';
 		}
 		$json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
 		echo $this->cleanString($json_encode);
 	}
 	public function create_consignment() {
-		$returnArr['status'] = '0';
+		$returnArr['status_code'] = '';
 		$returnArr['response'] = '';
 		try {
 			$data = json_decode(file_get_contents('php://input'), true);
@@ -111,24 +120,30 @@ class Api extends DAPI_Controller {
 					);
 					$this->api_model->simple_insert(CONSIGNMENT,$consigment_data);
 					$consignment_id = $this->mongo_db->insert_id();
-					$returnArr['status'] = '1';
+					$returnArr['status_code'] = http_response_code(200);
 					$returnArr['response'] = array('consigment_ref'=>$consigment_number,
 												   'consignment_id'=>$consignment_id,
 												'message'=>'Consignment Created Successfully');
 			} else {
+				http_response_code(400);
+			    $returnArr['status_code'] = "400";
 				$returnArr['response'] = 'some parameters are missing';
 			}
 		 } else {
+			 http_response_code(400);
+			 $returnArr['status_code'] = "400";
 			 $returnArr['response'] = 'something went wrong Please try again';
 		 }
 		} catch (MongoException $ex) {
+			http_response_code(500);
+			$returnArr['status_code'] = "500";
 			$returnArr['response'] = 'something went wrong Please try again';
 		}
 		$json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
 		echo $this->cleanString($json_encode);
 	}
 	public function create_trip() {
-		$returnArr['status'] = '0';
+		$returnArr['status_code'] = '0';
 		$returnArr['response'] = '';
 		try {
 			$data = json_decode(file_get_contents('php://input'), true);
@@ -177,30 +192,41 @@ class Api extends DAPI_Controller {
 								 'start_date'=>MongoDATE(strtotime($start_date))
 							);
 							$this->api_model->simple_insert(TRIP,$trip_data);
-							$returnArr['status'] = '1';
+							$returnArr['status_code'] = http_response_code(200);
 							$returnArr['response'] = array('trip_id'=>$trip_id,
 														'message'=>'Trip Booked Successfully');
 						} else {
+							http_response_code(400);
+							$returnArr['status_code'] = "400";
 							$returnArr['response'] = 'No consignment record Found';
 						}
 					} else {
+						http_response_code(400);
+						$returnArr['status_code'] = "400";
 						$returnArr['response'] = 'No vehicle Information Found';
 					}
 					
 			} else {
+				http_response_code(400);
+				$returnArr['status_code'] = "400";
 				$returnArr['response'] = 'some parameters are missing';
 			}
 		 } else {
+			 http_response_code(400);
+			 $returnArr['status_code'] = "400";
 			 $returnArr['response'] = 'something went wrong Please try again';
 		 }
-		} catch (MongoException $ex) {
+	   } catch (MongoException $ex) {
+			
+			http_response_code(500);
+			$returnArr['status_code'] = "500";
 			$returnArr['response'] = 'something went wrong Please try again';
 		}
 		$json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
 		echo $this->cleanString($json_encode);
 	}
 	public function update_trip_location() {
-        $returnArr['status'] = '0';
+        $returnArr['status_code'] = '';
         $returnArr['response'] = '';
 		try {
 			$data = json_decode(file_get_contents('php://input'), true);
@@ -220,18 +246,26 @@ class Api extends DAPI_Controller {
 										   'vehicle_id'=>MongoID($vehicle_id)
 										 );
 						$this->api_model->simple_insert(TRIP_TRACKING,$dataArr);
-						$returnArr['status'] = '1';
+						$returnArr['status_code'] = http_response_code(200);
 						$returnArr['response'] = 'Location Updated successfully';
 					}else{
+						http_response_code(404);
+						$returnArr['status_code'] = "404";
 						$returnArr['response'] = 'No Trip Found';
 					}
 				} else {
+					 http_response_code(400);
+					 $returnArr['status_code'] = "400";
 					$returnArr['response'] = 'Some Parameters are missing';
 				}
 		 } else {
+			 http_response_code(400);
+			 $returnArr['status_code'] = "400";
 			 $returnArr['response'] = 'something Went wrong';
 		 }
 		} catch (MongoException $ex) {
+			 http_response_code(500);
+			 $returnArr['status_code'] = "500";
             $returnArr['response'] = 'something Went wrong';
         }
         $json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
