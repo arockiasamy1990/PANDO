@@ -1,11 +1,6 @@
 <?php if (!defined('BASEPATH')){ exit('No direct script access allowed'); }
 
-/**
-* 
-* This controller contains the functions related to Drivers at the app end
-* @author Casperon
-*
-* */
+
 
 class Api extends DAPI_Controller {
     function __construct() {
