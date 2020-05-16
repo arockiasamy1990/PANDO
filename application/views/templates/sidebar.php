@@ -1,5 +1,5 @@
 <body class="hold-transition sidebar-mini">
-<?php  $currentUrl = $this->uri->segment(1, 0); ?>
+<?php   $currentUrl = (string)$this->uri->segment(1,0);  ?>
 <div class="wrapper">
  
 
@@ -25,7 +25,7 @@
                with font-awesome or any other icon font library -->
           
           <li class="nav-item">
-            <a href="<?php echo base_url().'vehicle/list'; ?>" class="nav-link <?php if($currentUrl=='vehicle') echo "active" ?>">
+            <a href="<?php echo base_url().'vehicle/list'; ?>" class="nav-link <?php  if($currentUrl=='vehicle' || $currentUrl=='0') { echo "active"; } ?>">
              
 			  <i class="nav-icon fas fa-truck"></i>
               <p>
@@ -35,7 +35,7 @@
             </a>
           </li>
 		  <li class="nav-item">
-            <a href="<?php echo base_url().'shipper/list'; ?>" class="nav-link <?php if($currentUrl=='shipper') echo "active" ?>">
+            <a href="<?php echo base_url().'shipper/list'; ?>" class="nav-link <?php if($currentUrl=='shipper') { echo "active"; }?>">
               <i class="nav-icon fas fa-address-card"></i>
               <p>
                 Shipper Report
@@ -44,7 +44,7 @@
             </a>
           </li>
 		  <li class="nav-item">
-            <a href="<?php echo base_url().'trip/list'; ?>" class="nav-link <?php if($currentUrl=='trip') echo "active" ?>">
+            <a href="<?php echo base_url().'trip/list'; ?>" class="nav-link <?php if($currentUrl=='trip') { echo "active"; }?>">
               <i class="nav-icon fas fa-luggage-cart"></i>
               <p>
                 Trip Report
