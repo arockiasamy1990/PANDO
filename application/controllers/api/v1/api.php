@@ -9,6 +9,10 @@ class Api extends DAPI_Controller {
         $this->load->model(array('api_model'));
 		$headers = $this->input->request_headers();
 		header('Content-type:application/json;charset=utf-8');
+		header('Access-Control-Allow-Origin: *');  
+		header('Access-Control-Allow-Headers: *');  
+		
+       
 		
     }
 	public function index() {
@@ -67,6 +71,174 @@ class Api extends DAPI_Controller {
 			 $returnArr['status_code'] = "400";
 			 $returnArr['response'] = 'something went wrong Please try again';
 		 }
+		} catch (MongoException $ex) {
+			http_response_code(500);
+			$returnArr['status_code'] = "500";
+			$returnArr['response'] = 'something went wrong Please try again';
+		}
+		$json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
+		echo $this->cleanString($json_encode);
+	}
+	
+	public function auth_user() {
+		$returnArr['status_code'] = '';
+		$returnArr['response'] = '';
+		try {
+			$data = json_decode(file_get_contents('php://input'), true);
+			
+			if(!empty($data)) {
+				$username=$data['authData']['name'];
+				$email=$data['authData']['email'];
+				$password=$data['authData']['password'];
+				$mode=$data['authData']['mode'];
+			    if ($username != "" && $email!='' && $password!='' && $mode!='') {
+					if($mode=='signup'){
+					   $checkUser=$this->api_model->get_selected_fields(USERS,array('email'=>$email),array("_id"));
+					   if($checkUser->num_rows()==0) {
+							  $DataArr=array(
+								'user_name' =>(string)$username,
+								'email' =>(string)$email,
+								'password'=>md5($password),
+								'created_at'=>MongoDATE(time())
+							);
+							$this->api_model->simple_insert(USERS,$DataArr);
+							$user_id = $this->mongo_db->insert_id(); 
+							$returnArr['status_code'] = http_response_code(200);
+							$returnArr['response'] = array('user_id'=>$user_id,
+														   'expiration'=>time()+1800
+														   );
+					   } else{
+						   http_response_code(400);
+						   $returnArr['status_code'] = "400";
+						   $returnArr['response'] = "Email already exists";
+					   }
+					} else {
+						$checkUser=$this->api_model->get_selected_fields(USERS,array('email'=>$email,"password"=>md5($password)),array("_id"));
+					    if($checkUser->num_rows()==1) {
+							$returnArr['status_code'] = http_response_code(200);
+							$returnArr['response'] = array('user_id'=>(string)$checkUser->row()->_id,
+														   'expiration'=>time()+1800
+														   );
+						} else {
+						   http_response_code(400);
+						   $returnArr['status_code'] = "400";
+						   $returnArr['response'] = "email or password is incorrect";
+						}
+					}
+			    } else {
+					http_response_code(400);
+					$returnArr['status_code'] = "400";
+					$returnArr['response'] = "Some Parameters are Missing";
+			    }
+			}	
+		} catch (MongoException $ex) {
+			http_response_code(500);
+			$returnArr['status_code'] = "500";
+			$returnArr['response'] = 'something went wrong Please try again';
+		}
+		$json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
+		echo $this->cleanString($json_encode);
+	}
+	public function list_vehicle() {
+		$returnArr['status_code'] = '';
+		$returnArr['response'] = '';
+		try {
+			
+			$vehicle_list=$this->api_model->get_all_details(VEHICLE,array(),array("created_at"=>1));
+			$vehicleArr=array();
+			if($vehicle_list->num_rows() >0) {
+				$i=1;
+				foreach($vehicle_list->result() as $data) {
+					$vehicleArr[]=array(
+									'sno'=>$i,
+									'vehicle_number'=>$data->vehicle_number,
+									'maker'=>$data->maker,
+									'model'=>$data->model,
+									'maximum_capacity'=>$data->maximum_capacity,
+									'owner_name'=>$data->owner_name,
+									'owner_contact'=>$data->owner_contact,
+									'created_at'=>date('d-m-Y h:i a',MongoEPOCH($data->created_at))
+					
+					);
+					$i++;
+				}
+				$returnArr['status_code'] = http_response_code(200);
+				$returnArr['response'] = array('vehicle_list'=>$vehicleArr);
+			}
+		} catch (MongoException $ex) {
+			http_response_code(500);
+			$returnArr['status_code'] = "500";
+			$returnArr['response'] = 'something went wrong Please try again';
+		}
+		$json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
+		echo $this->cleanString($json_encode);
+	}
+	public function list_shipper() {
+		$returnArr['status_code'] = '';
+		$returnArr['response'] = '';
+		try {
+			$shipper_list=$this->api_model->get_all_details(SHIPPER,array(),array("created_at"=>1));
+			$shipperArr=array();
+			if($shipper_list->num_rows() >0) {
+				$i=1;
+				foreach($shipper_list->result() as $data) {
+					$shipperArr[]=array(
+									'sno'=>$i,
+									'shipper_name'=>$data->shipper_name,
+									'shipper_contact'=>$data->shipper_contact,
+									'created_at'=>date('d-m-Y h:i a',MongoEPOCH($data->created_at))
+					
+					);
+					$i++;
+				}
+				$returnArr['status_code'] = http_response_code(200);
+				$returnArr['response'] = array('shipper_list'=>$shipperArr);
+			}
+		} catch (MongoException $ex) {
+			http_response_code(500);
+			$returnArr['status_code'] = "500";
+			$returnArr['response'] = 'something went wrong Please try again';
+		}
+		$json_encode = json_encode($returnArr, JSON_PRETTY_PRINT);
+		echo $this->cleanString($json_encode);
+	}
+	public function list_trip() {
+		$returnArr['status_code'] = '';
+		$returnArr['response'] = '';
+		try {
+			$filter_condition=array();
+			$data = json_decode(file_get_contents('php://input'), true);
+			if(!empty($data)) {
+				 $date_range = $data['searchdata']['search'];
+				 $dateArr=explode('-',$date_range);
+				 $date_from=strtotime($dateArr[0]);
+				 $date_to=strtotime($dateArr[1]);
+				 $filter_condition['start_date']  =  array('$gte' =>MongoDATE($date_from),'$lte' =>MongoDATE($date_to));
+			}
+			$trip_list=$this->api_model->get_all_details(TRIP,$filter_condition,array("booked_date"=>1));
+			$tripArr=array();
+			if($trip_list->num_rows() >0) {
+				$i=1;
+				
+				foreach($trip_list->result() as $data) {
+					$tripArr[]=array(
+						'sno'=>$i,
+						'trip_id'=>$data->trip_id,
+						'vehicle_number'=>$data->vehicle['vehicle_number'],
+						'owner_name'=>$data->vehicle['owner_name'],
+						'consigment_number'=>$data->consigment['consigment_number'],
+						'material_code'=>$data->consigment['material_code'],
+						'weight'=>$data->consigment['weight'],
+						'shipper_name'=>$data->consigment['shipper_name'],
+						'start_date'=>date('d-m-Y h:i a',MongoEPOCH($data->start_date)),
+						'booked_date'=>date('d-m-Y h:i a',MongoEPOCH($data->booked_date))
+					);
+					$i++;
+				}
+				
+			}
+			$returnArr['status_code'] = http_response_code(200);
+			$returnArr['response'] = array('trip_list'=>$tripArr);
 		} catch (MongoException $ex) {
 			http_response_code(500);
 			$returnArr['status_code'] = "500";

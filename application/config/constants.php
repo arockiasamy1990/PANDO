@@ -47,6 +47,7 @@ define('CONSIGNMENT', 'consignment');
 define('SHIPPER', 'shipper');
 define('TRIP', 'trip');
 define('TRIP_TRACKING', 'trip_tracking');
+define('USERS', 'users');
 
 
 

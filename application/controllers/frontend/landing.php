@@ -11,7 +11,8 @@ class Landing extends DAPI_Controller {
         $this->load->library(array('encrypt', 'form_validation'));
         $this->load->model('api_model');
         $returnArr = array();
-        
+        header('Access-Control-Allow-Origin: *');  
+		header('Access-Control-Allow-Headers: *');  
     }
 	
     public function index() {  
@@ -33,6 +34,9 @@ class Landing extends DAPI_Controller {
 			 $date_to=strtotime($dateArr[1]);
 			 $filter = "filter";
              $filter_condition['start_date']  =  array('$gte' =>MongoDATE($date_from),'$lte' =>MongoDATE($date_to));
+		}
+		if(isset($_GET['trip_id']) && $_GET['trip_id']!='') {
+			$filter_condition['trip_id']  = floatval($_GET['trip_id']); 
 		}
 		$this->data['filter'] = $filter;
 		$this->data['trip_list']=$tripList=$this->api_model->get_all_details(TRIP,$filter_condition,array("booked_date"=>1));
